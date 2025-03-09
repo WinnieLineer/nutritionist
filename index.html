@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專屬營養師 - 熱量管理</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2ecc71;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        button {
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #27ae60;
+        }
+        #result {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .meal-input {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .ai-response {
+            white-space: pre-wrap;
+            font-size: 1.1em;
+            line-height: 1.8;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .ai-response ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .ai-response li {
+            margin-bottom: 8px;
+        }
+        .ai-response strong {
+            color: #2ecc71;
+        }
+        /* 動畫樣式 */
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #2980b9;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #2ecc71;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍎 你的專屬營養師</h1>
+        
+        <!-- 熱量計算機 -->
+        <div class="section">
+            <h2>1. 熱量計算機</h2>
+            <label>年齡</label>
+            <input type="number" id="age" placeholder="請輸入您的年齡" min="1" max="120">
+            <label>活動量</label>
+            <select id="activity">
+                <option value="1.2">久坐（幾乎不動）</option>
+                <option value="1.375">輕度活動（每周運動1-3天）</option>
+                <option value="1.55">中度活動（每周運動3-5天）</option>
+                <option value="1.725">高度活動（每周運動6-7天）</option>
+                <option value="1.9">極度活動（重度勞動或專業運動員）</option>
+            </select>
+        </div>
+
+        <!-- 飲食輸入 -->
+        <div class="section">
+            <h2>2. 今日飲食</h2>
+            <div class="meal-input">
+                <label>早餐</label>
+                <textarea id="breakfast" placeholder="例: 燕麥片50g + 牛奶200ml"></textarea>
+            </div>
+            <div class="meal-input">
+                <label>午餐</label>
+                <textarea id="lunch" placeholder="例: 雞胸肉100g + 糙米飯150g"></textarea>
+            </div>
+            <div class="meal-input">
+                <label>晚餐</label>
+                <textarea id="dinner" placeholder="例: 鮭魚80g + 地瓜100g"></textarea>
+            </div>
+        </div>
+
+        <!-- 計算按鈕 -->
+        <button onclick="calculateCalories()">計算我的熱量！</button>
+
+        <!-- 動畫區 -->
+        <div id="loading">
+            <span class="spinner"></span> 營養師正在評估中...
+        </div>
+
+        <!-- 結果顯示 -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyA9OEx3T2q0ahU88aPyTE8ebquRm2FSxvg';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+        async function calculateCalories() {
+            const age = document.getElementById('age').value;
+            const activityLevel = document.getElementById('activity').value;
+            const breakfast = document.getElementById('breakfast').value;
+            const lunch = document.getElementById('lunch').value;
+            const dinner = document.getElementById('dinner').value;
+
+            if (!age || !breakfast || !lunch || !dinner) {
+                alert('請填寫所有欄位！');
+                return;
+            }
+
+            // 顯示動畫
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            document.getElementById('result').innerHTML = ''; // 清空先前結果
+
+            // 假設性別為男性，使用 Mifflin-St Jeor 公式計算 BMR
+            const weight = 70; // 假設體重70kg
+            const height = 170; // 假設身高170cm
+            const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            const tdee = bmr * activityLevel;
+            const weightLossCalories = tdee - 500; // 減肥每日減少500大卡
+
+            // 準備 AI 請求的飲食內容，包含 BMR
+            const prompt = `請分析以下飲食的總熱量並給出詳細說明：
+            早餐: ${breakfast}
+            午餐: ${lunch}
+            晚餐: ${dinner}
+            使用者的基礎代謝率 (BMR) 為 ${bmr.toFixed(0)} 大卡。請提供每餐的估計熱量並計算總和，然後根據 BMR 分析這天的熱量攝取是否合宜（例如是否適合維持體重、減肥或增重），用中文回覆。`;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                const data = await response.json();
+                let aiResult = data.candidates[0].content.parts[0].text;
+
+                // 處理 Markdown 格式
+                aiResult = aiResult.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                aiResult = aiResult.replace(/\* (.*?)(\n|$)/g, '<li>$1</li>');
+                aiResult = `<ul>${aiResult}</ul>`;
+                aiResult = aiResult.replace(/\n/g, '<br>');
+
+                // 隱藏動畫並顯示結果
+                loading.style.display = 'none';
+                document.getElementById('result').innerHTML = `
+                    <h3>📊 你的熱量分析</h3>
+                    <p><strong>基礎代謝率 (BMR):</strong> ${bmr.toFixed(0)} 大卡</p>
+                    <p><strong>每日總熱量需求 (TDEE):</strong> ${tdee.toFixed(0)} 大卡</p>
+                    <p><strong>減肥建議熱量:</strong> ${weightLossCalories.toFixed(0)} - ${(tdee - 300).toFixed(0)} 大卡</p>
+                    <h4>🍽 今日飲食分析</h4>
+                    <div class="ai-response">${aiResult}</div>
+                `;
+            } catch (error) {
+                loading.style.display = 'none';
+                document.getElementById('result').innerHTML = `
+                    <p>哎呀！AI分析出錯了，請稍後再試。</p>
+                    <p>不過你的基礎代謝率 (BMR): ${bmr.toFixed(0)} 大卡</p>
+                    <p>每日總熱量需求 (TDEE): ${tdee.toFixed(0)} 大卡</p>
+                    <p>減肥建議熱量: ${weightLossCalories.toFixed(0)} - ${(tdee - 300).toFixed(0)} 大卡</p>
+                `;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
