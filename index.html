@@ -7,155 +7,267 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(45deg, #ffeb3b, #ff9800, #e91e63, #2196f3);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            height: 90vh;
+            display: flex;
+            flex-direction: row;
+        }
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 10px;
+        }
+        .left-panel {
+            border-right: 2px dashed #ff9800;
         }
         h1 {
             text-align: center;
-            color: #2ecc71;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            color: #ff5722;
+            font-size: 1.5em;
+            margin: 5px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
-        .section {
-            margin-bottom: 30px;
+        h2 {
+            font-size: 1.2em;
+            color: #e91e63;
+            margin: 5px 0;
         }
         label {
             font-weight: bold;
-            color: #2980b9;
+            color: #e91e63;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 2px;
         }
         input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 2px solid #3498db;
+            width: 120px;
+            padding: 4px;
+            margin: 4px 0;
+            border: 2px solid #ff9800;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.8em;
+            background: #fff9c4;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #ff5722;
+            outline: none;
+        }
+        textarea {
+            height: 20px;
+            resize: none;
+            width: 250px;
         }
         button {
-            background: #2ecc71;
+            background: #ff5722;
             color: white;
-            padding: 12px 20px;
+            padding: 8px 20px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1.1em;
-            transition: background 0.3s;
+            font-size: 1em;
+            transition: transform 0.2s, background 0.3s;
         }
         button:hover {
-            background: #27ae60;
+            background: #e64a19;
+            transform: scale(1.05);
         }
         #result {
-            background: #ecf0f1;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            line-height: 1.6;
+            background: #f0f4c3;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            height: calc(100% - 20px);
+            overflow: hidden;
         }
         .meal-input {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
+            background: #fce4ec;
+            padding: 6px;
+            border-radius: 8px;
+            margin: 4px 0;
         }
         .ai-response {
-            white-space: pre-wrap;
-            font-size: 1.1em;
-            line-height: 1.8;
-            padding: 15px;
+            font-size: 0.9em;
+            line-height: 1.5;
+            padding: 8px;
             background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .ai-response ul {
-            padding-left: 20px;
-            margin: 10px 0;
+            padding-left: 15px;
+            margin: 5px 0;
         }
         .ai-response li {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
         .ai-response strong {
-            color: #2ecc71;
+            color: #ff5722;
         }
-        /* 動畫樣式 */
         #loading {
             display: none;
             text-align: center;
-            padding: 20px;
-            font-size: 1.2em;
-            color: #2980b9;
+            padding: 10px;
+            font-size: 1em;
+            color: #ff9800;
         }
         .spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #2ecc71;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #ff5722;
             border-top: 3px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
+            margin-right: 8px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .form-row div {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-row div:last-child {
+            margin-right: 0;
+        }
+
+        /* RWD 手機版調整 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                padding: 10px;
+            }
+            .left-panel {
+                border-right: none;
+                border-bottom: 2px dashed #ff9800;
+                padding-bottom: 15px;
+            }
+            .right-panel {
+                padding-top: 15px;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .form-row div {
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+            input, select, textarea {
+                width: 100%; /* 手機版填滿寬度 */
+            }
+            button {
+                width: 100%; /* 手機版按鈕填滿寬度 */
+            }
+            #result {
+                height: auto; /* 手機版自動高度 */
+                overflow: visible; /* 允許內容超出時顯示 */
+            }
+            h1 {
+                font-size: 1.3em; /* 手機版縮減標題 */
+            }
+            h2 {
+                font-size: 1.1em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍎 你的專屬營養師</h1>
-        
-        <!-- 熱量計算機 -->
-        <div class="section">
-            <h2>1. 熱量計算機</h2>
-            <label>年齡</label>
-            <input type="number" id="age" placeholder="請輸入您的年齡" min="1" max="120">
-            <label>活動量</label>
-            <select id="activity">
-                <option value="1.2">久坐（幾乎不動）</option>
-                <option value="1.375">輕度活動（每周運動1-3天）</option>
-                <option value="1.55">中度活動（每周運動3-5天）</option>
-                <option value="1.725">高度活動（每周運動6-7天）</option>
-                <option value="1.9">極度活動（重度勞動或專業運動員）</option>
-            </select>
+        <!-- 左邊輸入區 -->
+        <div class="left-panel">
+            <h1>🍎 你的專屬營養師</h1>
+            <div class="section">
+                <h2>1. 基礎代謝評估</h2>
+                <div class="form-row">
+                    <div>
+                        <label>性別</label>
+                        <select id="gender">
+                            <option value="male">男性</option>
+                            <option value="female">女性</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>年齡</label>
+                        <input type="number" id="age" placeholder="請輸入年齡" min="1" max="120">
+                    </div>
+                    <div>
+                        <label>身高 (cm)</label>
+                        <input type="number" id="height" placeholder="請輸入身高" min="50" max="250">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label>體重 (kg)</label>
+                        <input type="number" id="weight" placeholder="請輸入體重" min="20" max="300">
+                    </div>
+                    <div>
+                        <label>活動量</label>
+                        <select id="activity">
+                            <option value="1.2">久坐（幾乎不動）</option>
+                            <option value="1.375">輕度活動（每周1-3天）</option>
+                            <option value="1.55">中度活動（每周3-5天）</option>
+                            <option value="1.725">高度活動（每周6-7天）</option>
+                            <option value="1.9">極度活動（重度勞動）</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <h2>2. 今日飲食</h2>
+                <div class="meal-input">
+                    <label>早餐</label>
+                    <textarea id="breakfast" placeholder="例: 燕麥片50g + 牛奶200ml"></textarea>
+                </div>
+                <div class="meal-input">
+                    <label>午餐</label>
+                    <textarea id="lunch" placeholder="例: 雞胸肉100g + 糙米飯150g"></textarea>
+                </div>
+                <div class="meal-input">
+                    <label>晚餐</label>
+                    <textarea id="dinner" placeholder="例: 鮭魚80g + 地瓜100g"></textarea>
+                </div>
+            </div>
+            <button onclick="calculateCalories()">計算我的熱量！</button>
         </div>
 
-        <!-- 飲食輸入 -->
-        <div class="section">
-            <h2>2. 今日飲食</h2>
-            <div class="meal-input">
-                <label>早餐</label>
-                <textarea id="breakfast" placeholder="例: 燕麥片50g + 牛奶200ml"></textarea>
+        <!-- 右邊結果區 -->
+        <div class="right-panel">
+            <div id="loading">
+                <span class="spinner"></span> 營養師正在評估中...
             </div>
-            <div class="meal-input">
-                <label>午餐</label>
-                <textarea id="lunch" placeholder="例: 雞胸肉100g + 糙米飯150g"></textarea>
-            </div>
-            <div class="meal-input">
-                <label>晚餐</label>
-                <textarea id="dinner" placeholder="例: 鮭魚80g + 地瓜100g"></textarea>
-            </div>
+            <div id="result"></div>
         </div>
-
-        <!-- 計算按鈕 -->
-        <button onclick="calculateCalories()">計算我的熱量！</button>
-
-        <!-- 動畫區 -->
-        <div id="loading">
-            <span class="spinner"></span> 營養師正在評估中...
-        </div>
-
-        <!-- 結果顯示 -->
-        <div id="result"></div>
     </div>
 
     <script>
@@ -163,13 +275,16 @@
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
         async function calculateCalories() {
+            const gender = document.getElementById('gender').value;
             const age = document.getElementById('age').value;
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
             const activityLevel = document.getElementById('activity').value;
             const breakfast = document.getElementById('breakfast').value;
             const lunch = document.getElementById('lunch').value;
             const dinner = document.getElementById('dinner').value;
 
-            if (!age || !breakfast || !lunch || !dinner) {
+            if (!gender || !age || !height || !weight || !activityLevel || !breakfast || !lunch || !dinner) {
                 alert('請填寫所有欄位！');
                 return;
             }
@@ -177,14 +292,14 @@
             // 顯示動畫
             const loading = document.getElementById('loading');
             loading.style.display = 'block';
-            document.getElementById('result').innerHTML = ''; // 清空先前結果
+            document.getElementById('result').innerHTML = '';
 
-            // 假設性別為男性，使用 Mifflin-St Jeor 公式計算 BMR
-            const weight = 70; // 假設體重70kg
-            const height = 170; // 假設身高170cm
-            const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            // Mifflin-St Jeor 公式計算 BMR
+            const bmr = (gender === 'male') 
+                ? 10 * weight + 6.25 * height - 5 * age + 5 
+                : 10 * weight + 6.25 * height - 5 * age - 161;
             const tdee = bmr * activityLevel;
-            const weightLossCalories = tdee - 500; // 減肥每日減少500大卡
+            const weightLossCalories = tdee - 500;
 
             // 準備 AI 請求的飲食內容，包含 BMR
             const prompt = `請分析以下飲食的總熱量並給出詳細說明：
