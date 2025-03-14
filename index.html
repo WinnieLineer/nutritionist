@@ -61,7 +61,7 @@
             margin-bottom: 2px;
         }
         input, select, textarea {
-            width: 120px;
+            width: 150px;
             padding: 4px;
             margin: 4px 0;
             border: 2px solid #ff9800;
@@ -100,7 +100,7 @@
             font-size: 0.9em;
             line-height: 1.4;
             height: calc(100% - 20px);
-            overflow: hidden;
+            overflow-y: auto; /* 添加上下滑動條 */
         }
         .meal-input {
             background: #fce4ec;
@@ -132,6 +132,11 @@
             padding: 10px;
             font-size: 1em;
             color: #ff9800;
+            position: absolute; /* 確保居中 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; /* 填滿右邊區域 */
         }
         .spinner {
             display: inline-block;
@@ -163,18 +168,19 @@
         /* RWD 手機版調整 */
         @media (max-width: 768px) {
             .container {
-                flex-direction: column;
+                flex-direction: column; /* 上下排列 */
                 height: auto;
                 min-height: 100vh;
                 padding: 10px;
             }
             .left-panel {
-                border-right: none;
+                border-right: none; /* 移除右邊框 */
                 border-bottom: 2px dashed #ff9800;
                 padding-bottom: 15px;
             }
             .right-panel {
                 padding-top: 15px;
+                position: relative; /* 確保 loading 定位正確 */
             }
             .form-row {
                 flex-direction: column;
@@ -190,14 +196,21 @@
                 width: 100%; /* 手機版按鈕填滿寬度 */
             }
             #result {
-                height: auto; /* 手機版自動高度 */
-                overflow: visible; /* 允許內容超出時顯示 */
+                height: 300px; /* 手機版固定高度，確保滑動條出現 */
+                overflow-y: auto; /* 允許上下滑動 */
             }
             h1 {
-                font-size: 1.3em; /* 手機版縮減標題 */
+                font-size: 1.3em;
             }
             h2 {
                 font-size: 1.1em;
+            }
+            #loading {
+                width: 100%; /* 手機版填滿右邊區域 */
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
         }
     </style>
@@ -254,7 +267,7 @@
                     <textarea id="lunch" placeholder="例: 雞胸肉100g + 糙米飯150g"></textarea>
                 </div>
                 <div class="meal-input">
-                    <label>晚餐</label>
+                    <label>交晚餐</label>
                     <textarea id="dinner" placeholder="例: 鮭魚80g + 地瓜100g"></textarea>
                 </div>
             </div>
@@ -292,7 +305,7 @@
             // 顯示動畫
             const loading = document.getElementById('loading');
             loading.style.display = 'block';
-            document.getElementById('result').innerHTML = '';
+            document.getElementById('result').style.display = 'none'; // 隱藏結果
 
             // Mifflin-St Jeor 公式計算 BMR
             const bmr = (gender === 'male') 
@@ -328,7 +341,9 @@
 
                 // 隱藏動畫並顯示結果
                 loading.style.display = 'none';
-                document.getElementById('result').innerHTML = `
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block'; // 顯示結果
+                resultDiv.innerHTML = `
                     <h3>📊 你的熱量分析</h3>
                     <p><strong>基礎代謝率 (BMR):</strong> ${bmr.toFixed(0)} 大卡</p>
                     <p><strong>每日總熱量需求 (TDEE):</strong> ${tdee.toFixed(0)} 大卡</p>
@@ -338,7 +353,9 @@
                 `;
             } catch (error) {
                 loading.style.display = 'none';
-                document.getElementById('result').innerHTML = `
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
                     <p>哎呀！AI分析出錯了，請稍後再試。</p>
                     <p>不過你的基礎代謝率 (BMR): ${bmr.toFixed(0)} 大卡</p>
                     <p>每日總熱量需求 (TDEE): ${tdee.toFixed(0)} 大卡</p>
